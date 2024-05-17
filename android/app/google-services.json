@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "532640761451",
+    "project_id": "gallery-vault-mios",
+    "storage_bucket": "gallery-vault-mios.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532640761451:android:7b1d78e2c59b39a616d32e",
+        "android_client_info": {
+          "package_name": "com.photo.video.galleryvault.locker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_UDC0NHePGskA3zoOKN51sxIaTctv9eU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
