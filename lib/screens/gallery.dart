@@ -296,10 +296,6 @@ class GalleryService {
   static Future<bool> isFirstAppLaunch() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
-    // if (isFirstLaunch) {
-    //   // Set the flag to indicate that it's not the first launch anymore
-    //   prefs.setBool('isFirstLaunch', false);
-    // }
     return isFirstLaunch;
   }
 

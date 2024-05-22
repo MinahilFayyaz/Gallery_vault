@@ -16,6 +16,7 @@ import 'package:vault/screens/languages.dart';
 import 'package:vault/screens/settings/app_icons.dart';
 import 'package:vault/screens/settings/premium.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:vault/screens/settings/security.dart';
 
 import '../../consts/consts.dart';
 import '../../provider/themeprovider.dart';
@@ -530,12 +531,12 @@ class SettingsPage extends StatelessWidget {
                           'action': 'Button Clicked',
                         },
                       );
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const ChangePasswordPage(),
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Security(),
+                        ),
+                      );
                     },
                   ),
                   SizedBox(
