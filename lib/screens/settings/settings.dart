@@ -432,7 +432,9 @@ class SettingsPage extends StatelessWidget {
                           backgroundColor: Theme.of(context).brightness == Brightness.light
                               ? Colors.white
                               : Consts.FG_COLOR,
-                          title: Center(child: Text('Export Files')),
+                          title: Center(child: Text(
+                            AppLocalizations.of(context)!.exportFiles,
+                          )),
                           content: Text(
                               AppLocalizations.of(context)!.wouldYouLikeToSaveTheImagesToTheGalleryOrDownloadThemAsAZipFile + "?"),
                           actions: [
@@ -854,6 +856,7 @@ class _ProgressDialogState extends State<ProgressDialog> {
       Future.delayed(Duration.zero, () {
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: Column(
               children: [

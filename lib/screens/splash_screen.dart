@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vault/screens/languages.dart';
 import '../provider/onboardprovider.dart';
 import '../utils/utils.dart';
 import '../widgets/custombutton.dart';
@@ -25,85 +27,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final LocalAuthentication auth = LocalAuthentication();
-  _SupportState _supportState = _SupportState.unknown;
-  bool? _canCheckBiometrics;
-  List<BiometricType>? _availableBiometrics;
-  String _authorized = 'Not Authorized';
-  bool _isAuthenticating = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkDeviceSupport();
-  }
-
-  Future<void> _checkDeviceSupport() async {
-    try {
-      bool isSupported = await auth.isDeviceSupported();
-      setState(() {
-        _supportState = isSupported ? _SupportState.supported : _SupportState.unsupported;
-      });
-    } on PlatformException catch (e) {
-      print('Error checking device support: $e');
-      setState(() {
-        _supportState = _SupportState.unsupported;
-      });
-    }
-  }
-
-  Future<void> _authenticate() async {
-    bool authenticated = false;
-    try {
-      setState(() {
-        _isAuthenticating = true;
-        _authorized = 'Authenticating';
-      });
-      authenticated = await auth.authenticate(
-        localizedReason: 'Let OS determine authentication method',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-        ),
-      );
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = authenticated ? 'Authorized' : 'Not Authorized';
-      });
-
-      if (authenticated) {
-        _navigateToNextScreen();
-      } else {
-        _showErrorSnackBar('Authentication failed.');
-      }
-    } on PlatformException catch (e) {
-      print('Error during authentication: $e');
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Error - ${e.message}';
-      });
-      _showErrorSnackBar('Error during authentication: ${e.message}');
-    }
-  }
-
-  void _navigateToNextScreen() {
-    final onBoardingProvider = Provider.of<OnBoardingProvider>(context, listen: false);
-    onBoardingProvider.checkOnBoardingStatus();
-    final isOnBoardingComplete = onBoardingProvider.isBoardingCompleate;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => isOnBoardingComplete ? const LoginPage() : const OnBoardingSceen(),
-      ),
-    );
-  }
-
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -123,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   children: [
                     SizedBox(height: size.height * 0.07),
                     Image.asset(
-                      'assets/Frame 37367.png',
+                      'assets/Group 42161 (2).png',
                       height: size.height * 0.5,
                     ),
                     Padding(
@@ -151,7 +74,24 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                           SizedBox(height: size.height * 0.05),
                           CustomButton(
-                            ontap: _authenticate,
+                            ontap: () {
+                              FirebaseAnalytics.instance.logEvent(
+                                name: 'SplashScreen_get_started',
+                                parameters: <String, dynamic>{
+                                  'activity': 'Navigating to Onboarding/Login',
+                                },
+                              );
+                              final onBoardingProvider = Provider.of<OnBoardingProvider>(context, listen: false);
+                              onBoardingProvider.checkOnBoardingStatus();
+                              final isOnBoardingComplete = onBoardingProvider.isBoardingCompleate;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  isOnBoardingComplete ? const LoginPage() : const OnBoardingSceen(),
+                                ),
+                              );
+                            },
                             buttontext: AppLocalizations.of(context)!.getStarted,
                           ),
                         ],

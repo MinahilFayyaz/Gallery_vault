@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../consts/consts.dart';
 import '../provider/onboardprovider.dart';
 import '../utils/utils.dart';
 import '../widgets/custombutton.dart';
 import 'auth/register.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'languages.dart';
 
 class OnBoardingSceen extends StatefulWidget {
   const OnBoardingSceen({super.key});
@@ -24,8 +27,22 @@ class _OnBoardingSceenState extends State<OnBoardingSceen> {
     _controller = PageController(
       initialPage: 0,
     );
+
+    setDefaultSettings();
     super.initState();
   }
+
+  void setDefaultSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstLaunch = prefs.getBool('firstLaunch') ?? true;
+
+    if (isFirstLaunch) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => languagesScreen(isFirstLaunch)));
+      prefs.setBool('firstLaunch', false);
+    }
+  }
+
 
   @override
   void dispose() {

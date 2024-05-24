@@ -21,6 +21,7 @@ class GalleryService {
     }
     return await showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           elevation: 0,
@@ -100,17 +101,19 @@ class GalleryService {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      AppLocalizations.of(context)!.areYouSureYouWantTo +'\n'+
-                          AppLocalizations.of(context)!.move +'${selectedImagePaths.length} item(s)' + AppLocalizations.of(context)!.inThe
-                            +"\n"+ AppLocalizations.of(context)!.galleryVault,
-                        maxLines: 3,
-                      style: TextStyle(
-                          fontSize: 16,
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-        ? Color(0xFF222222).withOpacity(0.5)
-            : Color(0xFFFFFFFF).withOpacity(0.5),)
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context)!.areYouSureYouWantTo +'\n'+
+                            AppLocalizations.of(context)!.move +'${selectedImagePaths.length} item(s)' + AppLocalizations.of(context)!.inThe
+                              +"\n"+ AppLocalizations.of(context)!.galleryVault,
+                          maxLines: 3,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                              ? Color(0xFF222222).withOpacity(0.5)
+                                  : Color(0xFFFFFFFF).withOpacity(0.5),)
+                      ),
                     ),
                   ],
                 ),
@@ -244,14 +247,6 @@ class GalleryService {
     }
 
     selectedImagePaths.clear();
-
-    if (allImagesSaved) {
-      showSnackBar(
-          context, 'All selected images have been saved to the database.');
-      //_openSavedImagesScreen();
-    } else {
-      showSnackBar(context, 'Some images have not been saved to the database.');
-    }
     return true;
     // Navigator.pop(context, true);
   }

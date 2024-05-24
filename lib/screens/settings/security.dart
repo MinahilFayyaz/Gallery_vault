@@ -2,6 +2,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../consts/consts.dart';
 import '../auth/chagepassword.dart';
 import '../auth/changeemail.dart';
@@ -23,7 +24,7 @@ class Security extends StatelessWidget {
                 : Consts.FG_COLOR,
             centerTitle: true,
             title: Text(
-              "Security",
+              AppLocalizations.of(context)!.security,
               style: TextStyle(
                 //color: Colors.white,
                 fontSize: 18,
@@ -51,7 +52,7 @@ class Security extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        "Auth Changes",
+                        AppLocalizations.of(context)!.security,
                         style: TextStyle(
                           //color: Colors.white,
                           fontSize: 16,
@@ -63,8 +64,8 @@ class Security extends StatelessWidget {
                   ),
                   _buildListtile(
                     context: context,
-                    tiletitle: "Change Password",
-                    iconData: 'assets/settings/fi_8933942.svg',
+                    tiletitle:  AppLocalizations.of(context)!.changePassword,
+                    iconData: 'assets/change password.svg',
                     onTap: () {
                       FirebaseAnalytics.instance.logEvent(
                         name: 'settings_change_passcode',
@@ -86,8 +87,8 @@ class Security extends StatelessWidget {
                   ),
                   _buildListtile(
                     context: context,
-                    tiletitle: 'Change Email',
-                    iconData: 'assets/settings/fi_8933942.svg',
+                    tiletitle:  AppLocalizations.of(context)!.changeEmail,
+                    iconData: 'assets/change email.svg',
                     onTap: () {
                       FirebaseAnalytics.instance.logEvent(
                         name: 'settings_change_email',

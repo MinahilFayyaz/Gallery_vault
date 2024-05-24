@@ -61,7 +61,7 @@ class PremiumScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Get Full Access',
+                            AppLocalizations.of(context)!.getFullAccess,
                             textAlign: TextAlign.start,
                             style: TextStyle(
                               fontSize: 32,

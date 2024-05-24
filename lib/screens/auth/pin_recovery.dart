@@ -79,13 +79,15 @@ class _PinRecoveryPageState extends State<PinRecoveryPage> {
                       ),
                       SizedBox(height: size.height * 0.02),
                       Center(
-                        child: Text(
-                          AppLocalizations.of(context)!.simplyEnterYourEmailAddressAndWeWillGuide +'\n'+ AppLocalizations.of(context)!.youThroughTheProcessOfResettingPinSecurely,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                              fontFamily: "Manrope"
-                            //color: Colors.white,
+                        child: Flexible(
+                          child: Text(
+                            AppLocalizations.of(context)!.simplyEnterYourEmailAddressAndWeWillGuideyouThroughTheProcessOfResettingPinSecurely,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                                fontFamily: "Manrope"
+                              //color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

@@ -136,22 +136,11 @@ class _languagesScreenState extends State<languagesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: widget.isFirstLaunch ? false : true,
         backgroundColor: Theme.of(context).brightness == Brightness.light
             ? Color(0xFFFFFFFF) // Color for light theme
             : Consts.FG_COLOR,
         centerTitle: true,
-        leading: widget.isFirstLaunch
-            ? null
-            : IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back_ios_new_outlined,
-            size: 18,
-          ),
-        ),
         title: Text(
           AppLocalizations.of(context)!.languages,
           style: TextStyle(
@@ -160,6 +149,34 @@ class _languagesScreenState extends State<languagesScreen> {
             fontFamily: "Manrope",
           ),
         ),
+        actions: [
+           if (filteredLanguages.any((language) => language.isSelected &&
+               widget.isFirstLaunch)) // Show action icon only if any language is selected
+            Padding(
+              padding: const EdgeInsets.only(right: 18.0),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () {
+                    FirebaseAnalytics.instance.logEvent(
+                      name: 'Language_next_selected',
+                      parameters: <String, dynamic>{
+                        'activity': 'navigated to SettingsScreen',
+                        'action': 'button clicked',
+                      },
+                    );
+                    Navigator.pop(context);
+                  },
+                  child: Text( AppLocalizations.of(context)!.done,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: "Manrope",
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
       body:  Padding(
         padding: EdgeInsets.all(screenWidth * 0.035),

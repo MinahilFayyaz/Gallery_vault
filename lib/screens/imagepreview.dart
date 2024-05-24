@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -91,6 +93,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           elevation: 0,
@@ -265,6 +268,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
     // Get the file name with extension
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           elevation: 0,
@@ -344,16 +348,17 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                     AppLocalizations.of(context)!.thePhotoWillBeCompletely +'\n'+ AppLocalizations.of(context)!.deletedAndCannotBe +'\n' + AppLocalizations.of(context)!.recovered ,
-                      maxLines: 3,
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: "Manrope",
-                          color:
-                          Theme.of(context).brightness == Brightness.light
-                              ? Color(0xFF222222).withOpacity(0.5)
-                              : Color(0xFFFFFFFF).withOpacity(0.5)
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context)!.thePhotoWillBeCompletelyDeletedandCannotBeRecovered,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "Manrope",
+                            color:
+                            Theme.of(context).brightness == Brightness.light
+                                ? Color(0xFF222222).withOpacity(0.5)
+                                : Color(0xFFFFFFFF).withOpacity(0.5)
+                        ),
                       ),
                     ),
                   ],
@@ -546,7 +551,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                     ),
                   ),
                 ),
-                label: 'Share',
+                label: AppLocalizations.of(context)!.share,
                 backgroundColor: Consts.FG_COLOR,
               ),
               BottomNavigationBarItem(
@@ -568,7 +573,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                     ),
                   ),
                 ),
-                label: 'Unlock',
+                label:  AppLocalizations.of(context)!.unlock,
                 backgroundColor: Consts.FG_COLOR,
               ),
               BottomNavigationBarItem(
@@ -590,7 +595,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                     ),
                   ),
                 ),
-                label: 'Delete',
+                label: AppLocalizations.of(context)!.delete,
                 backgroundColor: Consts.FG_COLOR,
               ),
             ],
@@ -660,6 +665,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
   void _showConfirmationOutDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           elevation: 0,
@@ -739,15 +745,17 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      AppLocalizations.of(context)!.areYouSureYouWantToMove +"\n 1 item(s)"+ AppLocalizations.of(context)!.outTheGalleryVault,
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: "Manrope",
-                          color:
-                          Theme.of(context).brightness == Brightness.light
-                              ? Color(0xFF222222).withOpacity(0.5)
-                              : Color(0xFFFFFFFF).withOpacity(0.5),)
+                    Flexible(
+                      child: Text(
+                          AppLocalizations.of(context)!.areYouSureYouWantToMoveItemsOutOfGalleryVault,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "Manrope",
+                            color:
+                            Theme.of(context).brightness == Brightness.light
+                                ? Color(0xFF222222).withOpacity(0.5)
+                                : Color(0xFFFFFFFF).withOpacity(0.5),)
+                      ),
                     ),
                   ],
                 ),

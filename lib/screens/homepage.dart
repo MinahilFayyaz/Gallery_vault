@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       // Check if savedFolderNames is null or empty, if so, add default folders
       if (savedFolderNames == null || savedFolderNames.isEmpty) {
-        folderNames.addAll([AppLocalizations.of(context)!.home]);
+        folderNames.addAll(["Home"]);
         _saveFolderNames();
 
         print(
@@ -180,7 +180,6 @@ class _HomePageState extends State<HomePage> {
       // Optionally, you can trigger any other necessary updates here
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -496,16 +495,24 @@ class _HomePageState extends State<HomePage> {
                                         );
                                       } else if (snapshot.hasData) {
                                         return GestureDetector(
-                                          onTap: (){
-                                            String imageName = selectedImages[index].path.split('/').last;
+                                          onTap: () {
+                                            String imageName =
+                                                selectedImages[index]
+                                                    .path
+                                                    .split('/')
+                                                    .last;
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) => MediaPreview(
-                                                  imageFile: selectedImages[index],
-                                                  imageName: imageName, // Pass the image name here
+                                                builder: (context) =>
+                                                    MediaPreview(
+                                                  imageFile:
+                                                      selectedImages[index],
+                                                  imageName: imageName,
+                                                  // Pass the image name here
                                                   folderName: '',
-                                                  onImageRemoved: _updateImagesList,// Pass the folder name here
+                                                  onImageRemoved:
+                                                      _updateImagesList, // Pass the folder name here
                                                 ),
                                               ),
                                             );
@@ -550,16 +557,19 @@ class _HomePageState extends State<HomePage> {
                               );
                             } else {
                               return GestureDetector(
-                                onTap: (){
-
-                                  String imageName = selectedImages[index].path.split('/').last;
+                                onTap: () {
+                                  String imageName = selectedImages[index]
+                                      .path
+                                      .split('/')
+                                      .last;
 
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => MediaPreview(
                                         imageFile: selectedImages[index],
-                                        imageName: imageName, // Pass the image name here
+                                        imageName: imageName,
+                                        // Pass the image name here
                                         folderName: '',
                                         onImageRemoved: _updateImagesList,
                                         // Pass the folder name here
@@ -831,12 +841,18 @@ class _HomePageState extends State<HomePage> {
                   leading: Padding(
                     padding: EdgeInsets.only(left: paddingValue),
                     child: Theme.of(context).brightness == Brightness.light
-                        ? ColorFiltered(
-                            colorFilter:
-                                ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                            child: SvgPicture.asset('assets/delete 1.svg'))
-                        : SvgPicture.asset('assets/delete 1.svg'),
-                  ),
+                  //       ? ColorFiltered(
+                  //           colorFilter:
+                  //               ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                  //           child: SvgPicture.asset('assets/delete 1.svg'))
+                  //       : SvgPicture.asset('assets/delete 1.svg'),
+                  // ),
+        ?ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                            Colors.black, BlendMode.srcIn),
+                        child:
+                        SvgPicture.asset('assets/delete 1.svg'))
+                        : SvgPicture.asset('assets/delete 1.svg')),
                   title: Padding(
                     padding: EdgeInsets.only(left: paddingValue),
                     child: Text(
@@ -867,6 +883,7 @@ class _HomePageState extends State<HomePage> {
     // Get the file name with extension
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           elevation: 0,
@@ -892,8 +909,9 @@ class _HomePageState extends State<HomePage> {
                                 height: 40.0,
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                      ? Color(0xFFF5F5F5) // Color for light theme
+                                          Brightness.light
+                                      ? Color(
+                                          0xFFF5F5F5) // Color for light theme
                                       : Consts.FG_COLOR,
                                   shape: BoxShape.circle,
                                 ),
@@ -904,8 +922,9 @@ class _HomePageState extends State<HomePage> {
                                   child: ColorFiltered(
                                     colorFilter: ColorFilter.mode(
                                         Theme.of(context).brightness ==
-                                            Brightness.light
-                                            ? Colors.black // Color for light theme
+                                                Brightness.light
+                                            ? Colors
+                                                .black // Color for light theme
                                             : Colors.white,
                                         BlendMode.srcIn),
                                     child: SvgPicture.asset(
@@ -946,20 +965,17 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      AppLocalizations.of(context)!.thePhotoWillBeCompletely +
-                          '\n' +
-                          AppLocalizations.of(context)!.deletedAndCannotBe +
-                          '\n' +
-                          AppLocalizations.of(context)!.recovered,
-                      maxLines: 3,
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: "Manrope",
-                          color: Theme.of(context).brightness ==
-                              Brightness.light
-                              ? Color(0xFF222222).withOpacity(0.5)
-                              : Color(0xFFFFFFFF).withOpacity(0.5)),
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context)!.thePhotoWillBeCompletelyDeletedandCannotBeRecovered,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "Manrope",
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Color(0xFF222222).withOpacity(0.5)
+                                    : Color(0xFFFFFFFF).withOpacity(0.5)),
+                      ),
                     ),
                   ],
                 ),
@@ -990,10 +1006,10 @@ class _HomePageState extends State<HomePage> {
                     child: Text(
                       AppLocalizations.of(context)!.cancel,
                       style: TextStyle(
-                          color: Theme.of(context).brightness ==
-                              Brightness.light
-                              ? Color(0xFF222222) // Color for light theme
-                              : Colors.white),
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Color(0xFF222222) // Color for light theme
+                                  : Colors.white),
                     ),
                   ),
                   TextButton(
@@ -1037,6 +1053,7 @@ class _HomePageState extends State<HomePage> {
   void _showConfirmationOutDialog(BuildContext context, image) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           elevation: 0,
@@ -1062,9 +1079,9 @@ class _HomePageState extends State<HomePage> {
                                 height: 40.0,
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).brightness ==
-                                      Brightness.light
+                                          Brightness.light
                                       ? Color(
-                                      0xFFF5F5F5) // Color for light theme
+                                          0xFFF5F5F5) // Color for light theme
                                       : Consts.FG_COLOR,
                                   shape: BoxShape.circle,
                                 ),
@@ -1075,9 +1092,9 @@ class _HomePageState extends State<HomePage> {
                                   child: ColorFiltered(
                                     colorFilter: ColorFilter.mode(
                                         Theme.of(context).brightness ==
-                                            Brightness.light
+                                                Brightness.light
                                             ? Colors
-                                            .black // Color for light theme
+                                                .black // Color for light theme
                                             : Colors.white,
                                         BlendMode.srcIn),
                                     child: SvgPicture.asset(
@@ -1101,7 +1118,8 @@ class _HomePageState extends State<HomePage> {
                               AppLocalizations.of(context)!.moveOut,
                               style: const TextStyle(
                                   fontFamily: "Manrope",
-                                  fontSize: 18, fontWeight: FontWeight.w700),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700),
                             ),
                           ],
                         ),
@@ -1111,25 +1129,28 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                        AppLocalizations.of(context)!.areYouSureYouWantToMove +"\n 1 item(s)"+ AppLocalizations.of(context)!.outTheGalleryVault,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: "Manrope",
-                          color:
-                          Theme.of(context).brightness == Brightness.light
-                              ? Color(0xFF222222).withOpacity(0.5)
-                              : Color(0xFFFFFFFF).withOpacity(0.5),)
+                    Flexible(
+                      child: Text(
+                          AppLocalizations.of(context)!.areYouSureYouWantToMoveItemsOutOfGalleryVault,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "Manrope",
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Color(0xFF222222).withOpacity(0.5)
+                                    : Color(0xFFFFFFFF).withOpacity(0.5),
+                          )),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 8,),
+              SizedBox(
+                height: 8,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -1155,10 +1176,9 @@ class _HomePageState extends State<HomePage> {
                       AppLocalizations.of(context)!.cancel,
                       style: TextStyle(
                           color:
-                          Theme.of(context).brightness == Brightness.light
-                              ? Color(0xFF222222) // Color for light theme
-                              : Colors.white
-                      ),
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Color(0xFF222222) // Color for light theme
+                                  : Colors.white),
                     ),
                   ),
                   TextButton(
@@ -1203,12 +1223,14 @@ class _HomePageState extends State<HomePage> {
       return false;
     }
   }
+
   // Method to show the add folder dialog
   Future<String?> _showAddFolderDialog(BuildContext context) async {
     TextEditingController controller = TextEditingController();
 
     return showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -1256,12 +1278,16 @@ class _HomePageState extends State<HomePage> {
                     autofocus: true, // Automatically request focus
                     decoration: InputDecoration(
                       hintText: AppLocalizations.of(context)!.title,
-                      filled: true, // Fill the box with the fill color
-                      fillColor: Theme.of(context).brightness == Brightness.light
-            ? Color(0xFFF5F5F5) // Color for light theme
-            : Color(0xFF0C0B14), // Box fill color
+                      filled: true,
+                      // Fill the box with the fill color
+                      fillColor:
+                          Theme.of(context).brightness == Brightness.light
+                              ? Color(0xFFF5F5F5) // Color for light theme
+                              : Color(0xFF0C0B14),
+                      // Box fill color
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Consts.COLOR), // Border color
+                        borderSide: BorderSide(color: Consts.COLOR),
+                        // Border color
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       contentPadding: EdgeInsets.symmetric(
@@ -1284,21 +1310,24 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         minimumSize: Size(100, 40),
-                        backgroundColor:  Theme.of(context).brightness == Brightness.light
-                            ? Color(0xFFF5F5F5) // Color for light theme
-                            : Color(0xFF363C54), // Light theme button color
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.light
+                                ? Color(0xFFF5F5F5) // Color for light theme
+                                : Color(0xFF363C54), // Light theme button color
                       ),
                       child: Text(
                         AppLocalizations.of(context)!.cancel,
-                        style: TextStyle(color:Theme.of(context).brightness == Brightness.light
-                            ? Color(0xFF222222) // Color for light theme
-                            : Colors.white
-                        ),
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Color(0xFF222222) // Color for light theme
+                                    : Colors.white),
                       ),
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop(controller.text); // Confirm button
+                        Navigator.of(context)
+                            .pop(controller.text); // Confirm button
                       },
                       style: TextButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -1322,5 +1351,4 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-
 }

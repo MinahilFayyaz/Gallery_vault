@@ -4,13 +4,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hive/hive.dart';//video show ho rhi h ?? mobile ki
-///dkha hai na apny ab dono jaga permission dailogue show ho rha  hai or
-///br br bhi that should be only one  time before the default permission asked
-///
-/// acha 1 sec
-/// yes mobile pr zoom meeting kr ky share kr rhi hon device screenn
-/// okok pleease test krain feature
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';

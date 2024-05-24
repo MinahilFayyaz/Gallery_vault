@@ -97,13 +97,17 @@ class _ConfirmPasswordPageState extends State<ConfirmPasswordPage> {
                           ),
                         ),
                         SizedBox(height: size.height * 0.02),
-                        Text(
-                          AppLocalizations.of(context)!.ensureYourPrivatePhotoRemainConfidential +'\n'+ AppLocalizations.of(context)!.byEstablishingAPersonalizedPassword,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            fontFamily: "Manrope"
-                            //color: Colors.white,
+                        Center(
+                          child: Flexible(
+                            child: Text(
+                              AppLocalizations.of(context)!.ensureYourPrivatePhotoRemainConfidentialbyEstablishingAPersonalizedPassword,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                fontFamily: "Manrope"
+                                //color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                         SizedBox(height: size.height * 0.03),
@@ -157,7 +161,6 @@ class _ConfirmPasswordPageState extends State<ConfirmPasswordPage> {
                             fontSize: 30,
                           ),
                         ),
-
                         SizedBox(
                           height: size.height * 0.023,
                         ),

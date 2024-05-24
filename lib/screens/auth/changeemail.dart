@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../consts/consts.dart';
 import '../../provider/authprovider.dart';
@@ -21,7 +23,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Change Email Address'),
+        title: Text( AppLocalizations.of(context)!.changeEmail),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -30,18 +32,21 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _newEmailController,
-                keyboardType: TextInputType.emailAddress,
-                validator: MultiValidator([
-                  RequiredValidator(errorText: 'Email is required'),
-                  EmailValidator(errorText: 'Enter a valid email'),
-                ]),
-                decoration: InputDecoration(
-                  filled: true,
-                  labelText: 'New Email Address',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(Consts.BORDER_RADIUS),
+              Focus(
+                child: TextFormField(
+                  autofocus: true,
+                  controller: _newEmailController,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: MultiValidator([
+                    RequiredValidator(errorText: AppLocalizations.of(context)!.emailIsRequired),
+                    EmailValidator(errorText: AppLocalizations.of(context)!.enterAValidEmail),
+                  ]),
+                  decoration: InputDecoration(
+                    filled: true,
+                    labelText:  AppLocalizations.of(context)!.newEmailAddress,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(Consts.BORDER_RADIUS),
+                    ),
                   ),
                 ),
               ),
@@ -57,7 +62,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                     Navigator.pop(context);
                   }
                 },
-                buttontext: 'Change Email',
+                buttontext:  AppLocalizations.of(context)!.changeEmail,
               ),
             ],
           ),

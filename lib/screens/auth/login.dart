@@ -1,19 +1,32 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vault/widgets/custombutton.dart';
 
 import '../../consts/consts.dart';
 import '../../provider/authprovider.dart';
+import '../../provider/onboardprovider.dart';
 import '../../utils/utils.dart';
 import '../homepage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../onboardingpage.dart';
+
+enum _SupportState {
+  unknown,
+  supported,
+  unsupported,
+}
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,13 +38,19 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _loginformKey = GlobalKey<FormState>();
   final List<TextEditingController> _pinControllers =
-  List.generate(4, (_) => TextEditingController());
+      List.generate(4, (_) => TextEditingController());
   final passwordMatchValidator =
-  MatchValidator(errorText: 'Passwords do not match');
+      MatchValidator(errorText: 'Passwords do not match');
   int _incorrectAttempts = 0;
   final RegExp emailRegex = RegExp(
     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
   );
+  final LocalAuthentication auth = LocalAuthentication();
+  _SupportState _supportState = _SupportState.unknown;
+  bool? _canCheckBiometrics;
+  List<BiometricType>? _availableBiometrics;
+  String _authorized = 'Not Authorized';
+  bool _isAuthenticating = false;
 
   Future<void> sendEmail(String recipient, String subject, String body) async {
     // Create SMTP server configuration
@@ -48,8 +67,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final sendReport = await send(message, smtpServer);
       print('Message sent: $sendReport');
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Mail Send Successfully")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Mail Send Successfully")));
     } on MailerException catch (e) {
       print('Message not sent.');
       print(e.message);
@@ -62,16 +81,97 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // Add listeners to the pin controllers
+    _checkDeviceSupport();
     for (var controller in _pinControllers) {
       controller.addListener(_onPinChanged);
     }
   }
 
+  Future<void> _checkDeviceSupport() async {
+    try {
+      bool isSupported = await auth.isDeviceSupported();
+      setState(() {
+        _supportState =
+            isSupported ? _SupportState.supported : _SupportState.unsupported;
+      });
+    } on PlatformException catch (e) {
+      print('Error checking device support: $e');
+      setState(() {
+        _supportState = _SupportState.unsupported;
+      });
+    }
+  }
+
+  Future<void> _authenticate() async {
+    bool authenticated = false;
+    try {
+      setState(() {
+        _isAuthenticating = true;
+        _authorized = 'Authenticating';
+      });
+      authenticated = await auth.authenticate(
+        localizedReason: 'Let OS determine authentication method',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+        ),
+      );
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = authenticated ? 'Authorized' : 'Not Authorized';
+      });
+
+      if (authenticated) {
+        // _navigateToNextScreen();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomePage(),
+          ),
+        );
+      } else {
+        _showErrorSnackBar('Authentication failed.');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginPage(),
+          ),
+        );
+      }
+    } on PlatformException catch (e) {
+      print('Error during authentication: $e');
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = 'Error - ${e.message}';
+      });
+      _showErrorSnackBar('Error during authentication: ${e.message}');
+    }
+  }
+
+  void _navigateToNextScreen() {
+    final onBoardingProvider =
+        Provider.of<OnBoardingProvider>(context, listen: false);
+    onBoardingProvider.checkOnBoardingStatus();
+    final isOnBoardingComplete = onBoardingProvider.isBoardingCompleate;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            isOnBoardingComplete ? const HomePage() : const LoginPage(),
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   void _onPinChanged() {
     // Combine pin inputs from all controllers
     final pin =
-    _pinControllers.map((controller) => controller.text.trim()).join();
+        _pinControllers.map((controller) => controller.text.trim()).join();
 
     // Validate the entered pin when all 4 digits have been entered
     if (pin.length == 4) {
@@ -105,7 +205,6 @@ class _LoginPageState extends State<LoginPage> {
       _incorrectAttempts++;
       // Check if the incorrect attempts exceed 3
       if (_incorrectAttempts >= 3) {
-
         if (savedEmail.isEmpty) {
           // If saved email doesn't exist, prompt user to input email
           await _showEmailInputDialog(prefs);
@@ -123,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
 
-    FirebaseAnalytics.instance.logEvent(
+      FirebaseAnalytics.instance.logEvent(
         name: 'login_passcode',
         parameters: <String, dynamic>{
           'activity': 'Navigating to Homescreen',
@@ -148,36 +247,56 @@ class _LoginPageState extends State<LoginPage> {
     String email = ''; // Variable to store entered email
     await showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Theme.of(context).brightness == Brightness.light
+              ? Colors.white // Color for light theme
+              : Consts.FG_COLOR, // White background color
+          elevation: 0,
           title: Center(
               child: Text(
-                AppLocalizations.of(context)!.enterYourEmail,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: "Manrope",
+            AppLocalizations.of(context)!.enterYourEmail,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              fontFamily: "Manrope",
+            ),
+          )),
+          content: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                  color: Consts.COLOR), // Border around the TextField
+              borderRadius: BorderRadius.circular(8.0), // Rounded corners
+              //color: Consts.BG_COLOR
+            ),
+            child: Focus(
+              child: TextField(
+                autofocus: true,
+                onChanged: (value) {
+                  email = value; // Update email as user types
+                },
+                decoration: InputDecoration(
+                  hintText: "Email@gmail.com",
+                  filled: true,
+                  // Fill the box with the fill color
+                  fillColor: Theme.of(context).brightness == Brightness.light
+                      ? Color(0xFFF5F5F5) // Color for light theme
+                      : Color(0xFF0C0B14),
+              
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Consts.COLOR),
+                    // Border color
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                 ),
-              )),
-          content:
-                Container(
-                decoration: BoxDecoration(
-        border: Border.all(
-        color: Consts.COLOR), // Border around the TextField
-        borderRadius: BorderRadius.circular(8.0), // Rounded corners
-        //color: Consts.BG_COLOR
-        ),child :  TextField(
-            onChanged: (value) {
-              email = value; // Update email as user types
-            },
-            decoration: const InputDecoration(
-              hintText: "Email@gmail.com",
-              border: InputBorder.none, // Remove default border
-              contentPadding:
-              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              ),
             ),
           ),
-                ),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -215,7 +334,8 @@ class _LoginPageState extends State<LoginPage> {
                       print('enter your email address');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(AppLocalizations.of(context)!.enterYourEmail),
+                          content: Text(
+                              AppLocalizations.of(context)!.enterYourEmail),
                         ),
                       );
                     } else if (!emailRegex.hasMatch(email)) {
@@ -224,15 +344,14 @@ class _LoginPageState extends State<LoginPage> {
                           content: Text("enter valid email address"),
                         ),
                       );
-                    }
-                    else {
+                    } else {
                       // Save email to SharedPreferences
                       await prefs.setString('email', email);
                       Navigator.of(context).pop();
                       for (var controller in _pinControllers) {
                         controller.clear();
                       }
-                    }// Close dialog
+                    } // Close dialog
                   },
                   style: ButtonStyle(
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -296,19 +415,19 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: size.height * 0.07),
                         Theme.of(context).brightness == Brightness.light
                             ? SvgPicture.asset(
-                          'assets/padlock 3.svg',
-                          height: size.height * 0.1,
-                        )
+                                'assets/padlock 3.svg',
+                                height: size.height * 0.1,
+                              )
                             : SvgPicture.asset("assets/padlock 2.svg"),
                         SizedBox(height: size.height * 0.028),
                         Text(
                           AppLocalizations.of(context)!.enterYourPasscode,
                           style: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 18,
-                            fontFamily: "Manrope"
-                            //color: Colors.white,
-                          ),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18,
+                              fontFamily: "Manrope"
+                              //color: Colors.white,
+                              ),
                         ),
                         SizedBox(height: size.height * 0.028),
                         Container(
@@ -316,18 +435,18 @@ class _LoginPageState extends State<LoginPage> {
                           height: 60,
                           decoration: BoxDecoration(
                             color:
-                            Theme.of(context).brightness == Brightness.light
-                                ? const Color(0xFFF5F5F5) // Color for light theme
-                                : const Color(0xFF171823),
-                            border: Border.all(
-                                color: Colors
-                                    .deepPurple), // Change border color to purple
+                                Theme.of(context).brightness == Brightness.light
+                                    ? const Color(
+                                        0xFFF5F5F5) // Color for light theme
+                                    : const Color(0xFF171823),
+                            border: Border.all(color: Colors.deepPurple),
+                            // Change border color to purple
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Row(
                             children: List.generate(
                               4,
-                                  (index) {
+                              (index) {
                                 return Expanded(
                                   child: PinInputField(
                                       controller: _pinControllers[index]),
@@ -335,6 +454,11 @@ class _LoginPageState extends State<LoginPage> {
                               },
                             ),
                           ),
+                        ),
+                        SizedBox(height: size.height * 0.023),
+                        CustomButton(
+                            ontap: _authenticate,
+                            buttontext:  AppLocalizations.of(context)!.useAuthenticationInstead
                         ),
                         SizedBox(height: size.height * 0.05),
                         GridView.count(
@@ -347,34 +471,33 @@ class _LoginPageState extends State<LoginPage> {
                           crossAxisSpacing: 1.0,
                           children: List.generate(
                             12, // Increase by 1 to include the cancel button
-                                (index) {
+                            (index) {
                               if (index == 9) {
                                 // Leave the 9th index empty
                                 return Container();
                               } else if (index == 10) {
                                 // Display "0" at the 10th index
                                 return Padding(
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
                                   child: ElevatedButton(
                                     onPressed: () {
                                       final pinIndex = _pinControllers
                                           .indexWhere((controller) =>
-                                      controller.text.isEmpty);
+                                              controller.text.isEmpty);
                                       if (pinIndex != -1) {
                                         _pinControllers[pinIndex].text = '0';
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      shape: const CircleBorder(),
-                                      elevation: 0
-                                    ),
+                                        shape: const CircleBorder(),
+                                        elevation: 0),
                                     child: Text(
                                       '0',
                                       style: TextStyle(
                                         fontSize: 20,
                                         color: Theme.of(context).brightness ==
-                                            Brightness.light
+                                                Brightness.light
                                             ? Colors.black
                                             : Colors.white,
                                       ),
@@ -384,8 +507,8 @@ class _LoginPageState extends State<LoginPage> {
                               } else if (index == 11) {
                                 // Add a cancel button as the 11th element in the grid view
                                 return Padding(
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
                                   child: CancelButton(
                                     onPressed: () {
                                       _removeLastDigit();
@@ -395,30 +518,30 @@ class _LoginPageState extends State<LoginPage> {
                               } else {
                                 // Add numeric buttons from 1 to 9
                                 return Padding(
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
                                   child: ElevatedButton(
                                     onPressed: () {
                                       final pinIndex = _pinControllers
                                           .indexWhere((controller) =>
-                                      controller.text.isEmpty);
+                                              controller.text.isEmpty);
                                       if (pinIndex != -1) {
                                         _pinControllers[pinIndex].text =
-                                        '${index + 1}'; // Increment index by 1 to start counting from 1
+                                            '${index + 1}'; // Increment index by 1 to start counting from 1
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      shape: const CircleBorder(),
-                                      elevation: 0
-                                    ),
+                                        shape: const CircleBorder(),
+                                        elevation: 0),
                                     child: Text(
                                       //'${AppLocalizations.of(context)!.value1}${index + 1}',
                                       //AppLocalizations.of(context)!.digits,
-                                     '${index + 1}', // Increment index by 1 to start counting from 1
+                                      '${index + 1}',
+                                      // Increment index by 1 to start counting from 1
                                       style: TextStyle(
                                         fontSize: 20,
                                         color: Theme.of(context).brightness ==
-                                            Brightness.light
+                                                Brightness.light
                                             ? Colors.black
                                             : Colors.white,
                                       ),
@@ -460,7 +583,8 @@ class PinInputField extends StatelessWidget {
         ),
         keyboardType: TextInputType.number,
         maxLength: 1,
-        obscureText: true, // Hide the entered text
+        obscureText: true,
+        // Hide the entered text
         decoration: InputDecoration(
           hintText: '*',
           hintStyle: TextStyle(
@@ -473,7 +597,7 @@ class PinInputField extends StatelessWidget {
           counterText: '',
           border: InputBorder.none,
           contentPadding:
-          const EdgeInsets.only(bottom: 11), // Remove vertical padding
+              const EdgeInsets.only(bottom: 11), // Remove vertical padding
         ),
         onChanged: (_) {
           // No need to handle onChanged when using obscureText
@@ -498,22 +622,18 @@ class CancelButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        shape: const CircleBorder(),
-        elevation: 0
-      ),
+      style:
+          ElevatedButton.styleFrom(shape: const CircleBorder(), elevation: 0),
       child: Theme.of(context).brightness == Brightness.light
           ? ColorFiltered(
-        colorFilter: const ColorFilter.mode(
-          Colors.black,
-          BlendMode.srcIn,
-        ),
-        child: SvgPicture.asset(
-            'assets/Vector.svg'), // Color for light theme
-      )
+              colorFilter: const ColorFilter.mode(
+                Colors.black,
+                BlendMode.srcIn,
+              ),
+              child: SvgPicture.asset(
+                  'assets/Vector.svg'), // Color for light theme
+            )
           : SvgPicture.asset('assets/Vector.svg'),
     );
   }
 }
-
-

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../consts/consts.dart';
 import '../../provider/authprovider.dart';
 import '../../widgets/custombutton.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -24,16 +25,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   final GlobalKey<FormState> _changePasswordFormKey = GlobalKey<FormState>();
 
-  final passwordValidator = MultiValidator([
-    RequiredValidator(errorText: 'Password is required'),
-    MinLengthValidator(4, errorText: 'Password must be at least 4 digits long'),
-  ]);
-  final passwordMatchValidator = MatchValidator(errorText: 'Passwords do not match');
 
   bool isOldPasswordFieldActive = false; // Track if old password field is active
   bool isConfirmPasswordFieldActive = false; // Track if confirm password field is active
 
   String pin = '';
+  late MultiValidator passwordValidator;
+  late MatchValidator passwordMatchValidator;
+
 
   void _removeLastDigit() {
     setState(() {
@@ -65,6 +64,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     for (var controller in _pinControllers) {
       controller.addListener(_onPinChanged);
     }
+    final passwordValidator = MultiValidator([
+      RequiredValidator(errorText: AppLocalizations.of(context)!.passwordIsRequired),
+      MinLengthValidator(4, errorText: AppLocalizations.of(context)!.passwordMustBeAtLeast4DigitsLong),
+    ]);
+    final passwordMatchValidator = MatchValidator(errorText: AppLocalizations.of(context)!.passwordDonotMatch);
+
   }
 
   void _onPinChanged() {
@@ -130,7 +135,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ? Color(0xFFFFFFFF) // Color for light theme
                 : Consts.FG_COLOR,
             title:  Text(
-              "Change Password",
+              AppLocalizations.of(context)!.changePassword,
               style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
@@ -153,8 +158,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       onTap: () => setState(() {
                         isOldPasswordFieldActive = true;
                         isConfirmPasswordFieldActive = false;
-                        print('isOldPasswordFieldActive $isOldPasswordFieldActive $isConfirmPasswordFieldActive');
-
                       }
                       ), // Set active field
                       onFieldSubmitted: (value) {
@@ -168,7 +171,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       validator: passwordValidator.call,
                       decoration: InputDecoration(
                         filled: true,
-                        labelText: 'Old Password',
+                        labelText:
+                        AppLocalizations.of(context)!.oldPassword,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(Consts.BORDER_RADIUS),
                         ),
@@ -200,7 +204,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       validator: passwordValidator.call,
                       decoration: InputDecoration(
                         filled: true,
-                        labelText: 'New Password',
+                        labelText:
+                        AppLocalizations.of(context)!.newPassword,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(Consts.BORDER_RADIUS),
                         ),
@@ -229,7 +234,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       textInputAction: TextInputAction.done,
                       validator: (val) => passwordMatchValidator.validateMatch(val!, passwordController.text.trim()),
                       decoration: InputDecoration(
-                        labelText: 'Confirm Password',
+                        labelText:
+                        AppLocalizations.of(context)!.confirmPassword,
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(Consts.BORDER_RADIUS),
@@ -250,7 +256,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       ontap: () {
                         validate();
                       },
-                      buttontext: 'Change Password',
+                      buttontext:
+                      AppLocalizations.of(context)!.changePassword,
                     ),
                     SizedBox(height: size.height * 0.02),
                     GridView.count(
@@ -271,24 +278,19 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  print('isOldPasswordFieldActive $isOldPasswordFieldActive $isConfirmPasswordFieldActive');
 
                                   setState(() {
                                     if (pin.length < 4) {
-                                      print('isOldPasswordFieldActive $isOldPasswordFieldActive $isConfirmPasswordFieldActive');
 
                                       pin += '0';
                                       if (isOldPasswordFieldActive == true && isConfirmPasswordFieldActive == false){
-                                        print('isOldPasswordFieldActive $isOldPasswordFieldActive $isConfirmPasswordFieldActive');
-                                        oldpasswordController.text = pin;
+                                       oldpasswordController.text = pin;
                                       }
                                       else if (isConfirmPasswordFieldActive== true && isOldPasswordFieldActive ==false) {
-                                        print('isOldPasswordFieldActive $isOldPasswordFieldActive $isConfirmPasswordFieldActive');
-                                        confirmpasswordController.text = pin;
+                                       confirmpasswordController.text = pin;
                                       }
                                       else {
-                                        print('isOldPasswordFieldActive $isOldPasswordFieldActive $isConfirmPasswordFieldActive');
-                                        passwordController.text = pin;
+                                       passwordController.text = pin;
                                       }
                                     }
                                   });
@@ -385,8 +387,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       } else {
         // Old password does not match, show error message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Incorrect old password. Please try again.'),
+           SnackBar(
+            content: Text(AppLocalizations.of(context)!.incorrectPasscodePleaseTryAgain),
             duration: Duration(seconds: 2),
           ),
         );
