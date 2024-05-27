@@ -6,6 +6,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:vault/screens/app_localizations_ext.dart';
 import '../../consts/consts.dart';
 import '../../provider/authprovider.dart';
 import '../../widgets/custombutton.dart';
@@ -93,15 +94,13 @@ final screenHeight = MediaQuery.of(context).size.height;
                         ),
                         SizedBox(height: size.height * 0.02),
                         Center(
-                          child: Flexible(
-                            child: Text(
-                              AppLocalizations.of(context)!.ensureYourPrivatePhotoRemainConfidentialbyEstablishingAPersonalizedPassword,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                fontFamily: "Manrope"
-                                //color: Colors.white,
-                              ),
+                          child: Text(
+                            AppLocalizations.of(context)!.ensureYourPrivatePhotoRemainConfidentialbyEstablishingAPersonalizedPassword,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              fontFamily: "Manrope"
+                              //color: Colors.white,
                             ),
                           ),
                         ),
@@ -195,7 +194,7 @@ final screenHeight = MediaQuery.of(context).size.height;
                                     onPressed: () {
                                       setState(() {
                                         if (pin.length < 4) {
-                                          pin += '0'; // Append '0' to the pin
+                                          pin +=  "0"; // Append '0' to the pin
                                           passwordController.text = pin; // Set password controller text to the pin
                                         }
                                       });
@@ -205,7 +204,7 @@ final screenHeight = MediaQuery.of(context).size.height;
                                       elevation: 0
                                     ),
                                     child: Text(
-                                      '0',
+                                        AppLocalizations.of(context)!.value0,
                                       style: TextStyle(fontSize: 20,
                                       color: Theme.of(context).brightness == Brightness.light
                                           ? Colors.black// Color for light theme
@@ -242,7 +241,8 @@ final screenHeight = MediaQuery.of(context).size.height;
                                         elevation: 0
                                       ),
                                     child: Text(
-                                      '${index + 1}',
+                                      AppLocalizations.of(context)!.getValue('value${index + 1}'),
+                                      //'${index + 1}',
                                       style: TextStyle(fontSize: 20,
                                           color: Theme.of(context).brightness == Brightness.light
                                               ? Colors.black// Color for light theme

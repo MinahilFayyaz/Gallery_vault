@@ -602,6 +602,7 @@ class _FolderContentsPageState extends State<FolderContentsPage> {
       ),
     );
   }
+
   Future<void> _createTutorial() async {
     final targets = [
       TargetFocus(
@@ -610,39 +611,46 @@ class _FolderContentsPageState extends State<FolderContentsPage> {
         alignSkip: Alignment.topCenter,
         contents: [
           TargetContent(
-            builder: (context, controller) => Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment : MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 50.0),
-                  child: SvgPicture.asset(
-                    'assets/Layer 88.svg',
+            builder: (context, controller) {
+              final isRtl = Directionality.of(context) == TextDirection.rtl;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 50.0),
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.identity()..scale(isRtl ? -1.0 : 1.0, 1.0),
+                      child: SvgPicture.asset(
+                        'assets/Layer 88.svg',
+                      ),
+                    ),
                   ),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  AppLocalizations.of(context)!.addFiles,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontFamily: "Manrope",
-                    fontWeight: FontWeight.w700,
+                  SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.addFiles,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontFamily: "Manrope",
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context)!.youCanAddPhotosAndVideosTo+'\n'+
-                      AppLocalizations.of(context)!.theAlbumByTapping +" +.",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: "Manrope",
-                    fontWeight: FontWeight.w500,
-                  ),
-                )
-              ],
-            ),
+                  SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.youCanAddPhotosAndVideosTo+'\n'+
+                        AppLocalizations.of(context)!.theAlbumByTapping +" +.",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontFamily: "Manrope",
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -657,4 +665,5 @@ class _FolderContentsPageState extends State<FolderContentsPage> {
       tutorial.show(context: context);
     });
   }
+
 }

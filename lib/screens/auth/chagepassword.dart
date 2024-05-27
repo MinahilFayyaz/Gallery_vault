@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vault/screens/app_localizations_ext.dart';
 
 import '../../consts/consts.dart';
 import '../../provider/authprovider.dart';
@@ -64,12 +65,16 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     for (var controller in _pinControllers) {
       controller.addListener(_onPinChanged);
     }
-    final passwordValidator = MultiValidator([
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    passwordValidator = MultiValidator([
       RequiredValidator(errorText: AppLocalizations.of(context)!.passwordIsRequired),
       MinLengthValidator(4, errorText: AppLocalizations.of(context)!.passwordMustBeAtLeast4DigitsLong),
     ]);
-    final passwordMatchValidator = MatchValidator(errorText: AppLocalizations.of(context)!.passwordDonotMatch);
-
+    passwordMatchValidator = MatchValidator(errorText: AppLocalizations.of(context)!.passwordDonotMatch);
   }
 
   void _onPinChanged() {
@@ -282,7 +287,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   setState(() {
                                     if (pin.length < 4) {
 
-                                      pin += '0';
+                                      pin += "0";
                                       if (isOldPasswordFieldActive == true && isConfirmPasswordFieldActive == false){
                                        oldpasswordController.text = pin;
                                       }
@@ -299,7 +304,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   shape: const CircleBorder(),
                                 ),
                                 child: Text(
-                                  '0',
+                                    AppLocalizations.of(context)!.value0,
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
@@ -350,7 +355,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   shape: const CircleBorder(),
                                 ),
                                 child: Text(
-                                  '${index + 1}',
+                                  AppLocalizations.of(context)!.getValue('value${index + 1}'),
+                                  //'${index + 1}',
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,

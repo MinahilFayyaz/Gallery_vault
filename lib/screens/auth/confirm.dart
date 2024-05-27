@@ -1,8 +1,10 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:provider/provider.dart';
+import 'package:vault/screens/app_localizations_ext.dart';
 import 'package:vault/screens/auth/pin_recovery.dart';
 import 'package:vault/screens/auth/register.dart';
 
@@ -98,15 +100,13 @@ class _ConfirmPasswordPageState extends State<ConfirmPasswordPage> {
                         ),
                         SizedBox(height: size.height * 0.02),
                         Center(
-                          child: Flexible(
-                            child: Text(
-                              AppLocalizations.of(context)!.ensureYourPrivatePhotoRemainConfidentialbyEstablishingAPersonalizedPassword,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                fontFamily: "Manrope"
-                                //color: Colors.white,
-                              ),
+                          child: Text(
+                            AppLocalizations.of(context)!.ensureYourPrivatePhotoRemainConfidentialbyEstablishingAPersonalizedPassword,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              fontFamily: "Manrope"
+                              //color: Colors.white,
                             ),
                           ),
                         ),
@@ -202,7 +202,7 @@ class _ConfirmPasswordPageState extends State<ConfirmPasswordPage> {
                                     onPressed: () {
                                       setState(() {
                                         if (pin.length < 4) {
-                                          pin += '0'; // Append '0' to the pin
+                                          pin +=  "0"; // Append '0' to the pin
                                           confirmpasswordController.text = pin; // Set password controller text to the pin
                                         }
                                       });
@@ -212,7 +212,7 @@ class _ConfirmPasswordPageState extends State<ConfirmPasswordPage> {
                                         elevation: 0
                                     ),
                                     child: Text(
-                                      '0',
+                                        AppLocalizations.of(context)!.value0,
                                       style: TextStyle(fontSize: 20, color: Theme.of(context).brightness == Brightness.light
                                           ? Colors.black// Color for light theme
                                           : Colors.white,),
@@ -247,7 +247,8 @@ class _ConfirmPasswordPageState extends State<ConfirmPasswordPage> {
                                         elevation: 0
                                     ),
                                     child: Text(
-                                      '${index + 1}',
+                                      AppLocalizations.of(context)!.getValue('value${index + 1}'),
+                                      //'${index + 1}',
                                       style: TextStyle(fontSize: 20, color:
                                       Theme.of(context).brightness == Brightness.light
                                           ? Colors.black// Color for light theme

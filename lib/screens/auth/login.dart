@@ -11,6 +11,7 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vault/screens/app_localizations_ext.dart';
 import 'package:vault/widgets/custombutton.dart';
 
 import '../../consts/consts.dart';
@@ -230,8 +231,8 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Incorrect pin code. Please try again.'),
+         SnackBar(
+          content: Text(AppLocalizations.of(context)!.incorrectPasscodePleaseTryAgain),
           duration: Duration(seconds: 2),
         ),
       );
@@ -331,7 +332,6 @@ class _LoginPageState extends State<LoginPage> {
                 TextButton(
                   onPressed: () async {
                     if (email.isEmpty) {
-                      print('enter your email address');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
@@ -340,8 +340,8 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     } else if (!emailRegex.hasMatch(email)) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("enter valid email address"),
+                         SnackBar(
+                          content: Text(AppLocalizations.of(context)!.enterAValidEmail),
                         ),
                       );
                     } else {
@@ -458,7 +458,7 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: size.height * 0.023),
                         CustomButton(
                             ontap: _authenticate,
-                            buttontext:  AppLocalizations.of(context)!.useAuthenticationInstead
+                            buttontext: AppLocalizations.of(context)!.useAuthenticationInstead
                         ),
                         SizedBox(height: size.height * 0.05),
                         GridView.count(
@@ -486,14 +486,14 @@ class _LoginPageState extends State<LoginPage> {
                                           .indexWhere((controller) =>
                                               controller.text.isEmpty);
                                       if (pinIndex != -1) {
-                                        _pinControllers[pinIndex].text = '0';
+                                        _pinControllers[pinIndex].text =  '0';
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
                                         shape: const CircleBorder(),
                                         elevation: 0),
                                     child: Text(
-                                      '0',
+                                        AppLocalizations.of(context)!.value0,
                                       style: TextStyle(
                                         fontSize: 20,
                                         color: Theme.of(context).brightness ==
@@ -534,10 +534,7 @@ class _LoginPageState extends State<LoginPage> {
                                         shape: const CircleBorder(),
                                         elevation: 0),
                                     child: Text(
-                                      //'${AppLocalizations.of(context)!.value1}${index + 1}',
-                                      //AppLocalizations.of(context)!.digits,
-                                      '${index + 1}',
-                                      // Increment index by 1 to start counting from 1
+                                      AppLocalizations.of(context)!.getValue('value${index + 1}'),
                                       style: TextStyle(
                                         fontSize: 20,
                                         color: Theme.of(context).brightness ==

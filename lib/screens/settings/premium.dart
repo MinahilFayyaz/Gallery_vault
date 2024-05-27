@@ -16,6 +16,7 @@ class PremiumScreen extends StatelessWidget {
     FirebaseAnalytics.instance.setCurrentScreen(screenName: 'Premium Screen');
     final size = MediaQuery.of(context).size;
 
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Scaffold(
       backgroundColor: Consts.BG_COLOR,
       body: SafeArea(
@@ -243,7 +244,10 @@ class PremiumScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SvgPicture.asset('assets/arrow_back.svg'),
+                          Transform(
+                              alignment: Alignment.center,
+                              transform: Matrix4.identity()..scale(isRtl ? -1.0 : 1.0, 1.0),
+                              child: SvgPicture.asset('assets/arrow_back.svg')),
                         ],
                       ),
                     ),
